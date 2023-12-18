@@ -344,8 +344,6 @@ workflows:
               ignore: *release_branch_names
       - publish-docs/build_docs:
           <<: *ir_docs_config
-          requires:
-            - build_and_test
           filters:
             branches:
               ignore: *fork_prs_and_releases_filter

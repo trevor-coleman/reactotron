@@ -3,7 +3,6 @@
 set -eo pipefail
 
 : "${GPF_REACTOTRON_BRANCH:=build-trusted-commits}"
-: "${GPF_USE_SSH:=""}"
 
 REACTOTRON_REPO="git@github.com:infinitered/reactotron.git"
 BRANCH_SPEC=$1
@@ -25,13 +24,11 @@ if git config --get "remote.fork-to-test.url" > /dev/null; then
 else
     echo "Remote fork-to-test does not exist, no need to remove it"
 fi
-if [ -n "$GPF_USE_SSH" ]; then
-    git "remote add fork-to-test git@github.com:$SOURCE_GH_USER/$REPO_NAME.git"
-else
-    git remote add "fork-to-test https://github.com/$SOURCE_GH_USER/$REPO_NAME.git"
-fi
+
+git remote add fork-to-test "git@github.com:$SOURCE_GH_USER/$REPO_NAME.git"
+
 git fetch --all
-git push --force $REACTOTRON_REPO "refs/remotes/fork-to-test/$SOURCE_BRANCH:refs/heads/$GPF_REACTOTRON_BRANCH"
+git push --force "$REACTOTRON_REPO" "refs/remotes/fork-to-test/$SOURCE_BRANCH:refs/heads/$GPF_REACTOTRON_BRANCH"
 git remote remove fork-to-test || echo "Removed new remote fork-to-test"
 
 cat <<EOF
