@@ -18,7 +18,13 @@ SOURCE_GH_USER=$(echo "$BRANCH_SPEC" | awk -F: '{print $1}')
 SOURCE_BRANCH=$(echo "$BRANCH_SPEC" | awk -F: '{print $2}')
 REPO_NAME=$(git remote get-url --push origin | awk -F/ '{print $NF}' | sed 's/\.git$//')
 
-git remote remove fork-to-test || echo "Added new remote fork-to-test"
+# Check if 'fork-to-test' remote exists and then remove it
+if git config --get "remote.fork-to-test.url" > /dev/null; then
+    git remote remove fork-to-test
+    echo "Removed remote fork-to-test"
+else
+    echo "Remote fork-to-test does not exist, no need to remove it"
+fi
 if [ -n "$GPF_USE_SSH" ]; then
     git "remote add fork-to-test git@github.com:$SOURCE_GH_USER/$REPO_NAME.git"
 else
